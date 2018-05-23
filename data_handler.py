@@ -1,4 +1,4 @@
-from rpy2.robjects import r, pandas2ri
+from rpy2.robjects import r
 from rpy2 import robjects
 from sklearn import preprocessing
 import pandas as pd
@@ -11,28 +11,22 @@ warnings.filterwarnings("ignore")
 # Caution: All the date are string form.
 # This class is used to get return series of stocks.
 class DataHandler(object):
-    def __init__(self, from_to, stock_pool=None, daily_lag=20, month_lag=12):
-        r['library']('GCAMCTF')
-        self.from_to = from_to
-        self.r_from_to = robjects.IntVector(from_to)
-        self.dates_daily, self.dates_month, self.dates_sample = self._get_trading_date()
-        self.daily_lag = daily_lag
-        self.month_lag = month_lag
-        self.stock_pool = stock_pool
+    def __init__(self, date, stock_pool=None, daily_lag=20, month_lag=12):
+        r['library']('GCAMCTS')
+        self.date = date
+        # self.r_from_to = robjects.IntVector(from_to)
+        # self.dates_daily, self.dates_month, self.dates_sample = self._get_trading_date()
+        # self.daily_lag = daily_lag
+        # self.month_lag = month_lag
+        # self.stock_pool = stock_pool
         self.data = self._get_quote()
             
     def _get_quote(self):
-        start = [x for x in self.dates_month if x < self.dates_sample[0]][-self.month_lag-1]
-        start = int(start.replace('-', ''))
-        r_script = '''from_to <- c({}, {})
-                      data <- ashare_quote(from_to)
-                      data[,TRADINGDAY := as.character(TRADINGDAY)]
-                   '''.format(start, self.from_to[1])
+        r_script = '''
+                      data <- read_hfd("{}")
+                      
+                   '''.format(self.date)
         data = r(r_script)
-        data = data[['INNERCODE', 'TRADINGDAY', 'OPENPRICE', 'HIGHPRICE', 
-                      'CLOSEPRICE', 'LOWPRICE', 'PREVCLOSEPRICE']]
-        if self.stock_pool:
-            data = self._set_stock_pool(start, data)
         return data
         
     @property
@@ -152,10 +146,10 @@ class DataReader(object):
 
 
 if __name__ == "__main__":
-    '''
-    dh = DataHandler([20120101, 20160101], "CSI500")
+    dh = DataHandler([20180103])
     dh.get_input_data()
     '''
     dr = DataReader('./CSI500/test/data.xlsx')
     print(dr.rtn.shape)
+    '''
 
