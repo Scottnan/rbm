@@ -23,7 +23,7 @@ class DataHandler(object):
             
     def _get_quote(self):
         r_script = '''
-                      data <- read_hfd("{}")
+                      data <- read_hfd({})
                       
                    '''.format(self.date)
         data = r(r_script)
@@ -146,8 +146,9 @@ class DataReader(object):
 
 
 if __name__ == "__main__":
-    dh = DataHandler([20180103])
-    dh.get_input_data()
+    dh = DataHandler("2018-01-03")
+    print(dh.data)
+    # dh.get_input_data()
     '''
     dr = DataReader('./CSI500/test/data.xlsx')
     print(dr.rtn.shape)
