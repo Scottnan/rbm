@@ -1,4 +1,5 @@
 library(GCAMCTS)
+library(GCAMCQT)
 library(assertthat)
 library(data.table)
 
@@ -99,7 +100,7 @@ choose_folder <- function(var, folders) {
 }
 
 
-tf_factor_tbl <- function(vars, from_to, value_col, freq_info = list(freq_days=1, freq_starts=1), folders = "E:/GCAMCDL_DC") {
+tf_factor_tbl <- function(vars, from_to, value_col, freq_info = list(freq_days=1, freq_starts=1), need_rtn=TRUE, folders = "E:/GCAMCDL_DC") {
 
   from_to <- GCAMCPUB::as_from_to(from_to)
   universe <- GCAMCQT::factor_universe(from_to, freq = "daily")
@@ -111,9 +112,7 @@ tf_factor_tbl <- function(vars, from_to, value_col, freq_info = list(freq_days=1
     value <- values[[var]][universe, c(value_col), roll = FALSE, with = FALSE]
     set(universe, j = var, value = value)
   }
-  universe[]
-}
 
-read_tf_quote <- function(date) {
-  read_hfd(date)
+  if(need_rtn) universe[, "fwd_rtn" := ashare_fwd_rtns(INNER_CODE, DATE)[,.(RTN)]]
+  universe[]
 }

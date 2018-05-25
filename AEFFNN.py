@@ -1,6 +1,6 @@
 from gbrbm import GBRBM
 from data_handler import DataReader
-from utilsnn import tf_xavier_init
+from utilsnn import xavier_init
 import os
 import tensorflow as tf
 import numpy as np
@@ -50,7 +50,7 @@ class AEFFNN(object):
         for i in range(len(self.layer_sizes)):
             dim = self.layer_sizes[i]
             input_dim = int(next_layer_input.get_shape()[1])
-            W = tf.Variable(tf_xavier_init(input_dim, dim, const=1.0), dtype=tf.float32)
+            W = tf.Variable(xavier_init(input_dim, dim, const=1.0), dtype=tf.float32)
             b = tf.Variable(tf.zeros([dim]), dtype=tf.float32)
             self.encoding_matrices.append(W)
             self.encoding_biases.append(b)
